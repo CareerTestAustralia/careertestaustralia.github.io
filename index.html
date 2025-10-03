@@ -302,25 +302,42 @@
 
                 // --- Jobs start page 2 ---
                 doc.addPage();
-                let y=20;
-                finalRecommendations.slice(0,3).forEach((job,index)=>{
-                    function addTextBlock(text, fontSize=12, bold=false){
+                let y = 20;
+                const lineHeight = 6; // approximate line height
+
+                finalRecommendations.slice(0, 3).forEach((job, index) => {
+                    // Estimate block height
+                    const estimatedBlockHeight = 40 + 
+                        (job.matchedInterests.length * lineHeight) + 
+                        (job.skills.length * lineHeight) + 
+                        ((job.subjects ? job.subjects.length : 0) * lineHeight);
+
+                    if (y + estimatedBlockHeight > pageHeight - 20) {
+                        doc.addPage();
+                        y = 20;
+                    }
+
+                    function addTextBlock(text, fontSize = 12, bold = false) {
+                        if (y > pageHeight - 20) {
+                            doc.addPage();
+                            y = 20;
+                        }
                         doc.setFontSize(fontSize);
-                        doc.setFont("helvetica",bold?'bold':'normal');
-                        doc.text(text,20,y);
-                        y+=fontSize/1.2+2;
+                        doc.setFont("helvetica", bold ? "bold" : "normal");
+                        doc.text(text, 20, y);
+                        y += fontSize / 1.2 + 2;
                     }
-                    addTextBlock(`${index+1}. ${job.name}`,16,true);
-                    addTextBlock("Based on your interests in:",12,true);
-                    job.matchedInterests.forEach(i=>addTextBlock(`- ${i}`));
-                    addTextBlock("Key Skills:",12,true);
-                    job.skills.forEach(s=>addTextBlock(`- ${s}`));
-                    if(job.subjects&&job.subjects.length){
-                        addTextBlock("Subjects to Study:",12,true);
-                        job.subjects.forEach(s=>addTextBlock(`- ${s}`));
+
+                    addTextBlock(`${index + 1}. ${job.name}`, 16, true);
+                    addTextBlock("Based on your interests in:", 12, true);
+                    job.matchedInterests.forEach(i => addTextBlock(`- ${i}`));
+                    addTextBlock("Key Skills:", 12, true);
+                    job.skills.forEach(s => addTextBlock(`- ${s}`));
+                    if (job.subjects && job.subjects.length) {
+                        addTextBlock("Subjects to Study:", 12, true);
+                        job.subjects.forEach(s => addTextBlock(`- ${s}`));
                     }
-                    y+=10;
-                    if(y>pageHeight-20){ doc.addPage(); y=20; }
+                    y += 10;
                 });
 
                 // --- Page numbers ---
